@@ -1,15 +1,18 @@
 import pandas as pd
 import os
 import sys
+import numpy as np
 pd.set_option("display.max_column",40)
 
 def map_ratio(sub_f):
-  r_len=int(list(sub_f["ReadLen"])[0])
-  l=zip(sub_f["ReadStart"],sub_f["ReadEnd"])
-  a=np.array([0]*r_len)
-  for i in l:
-    a[i[0]:i[1]+1]=1
-  return list(a).count(1)
+	r_len=int(list(sub_f["ReadLen"])[0])
+	l1=zip(sub_f["Readref_s"],sub_f["Readref_e"])
+	l2=zip(sub_f["Readte_s"],sub_f["Readte_e"])
+	l=list(l1)+list(l2)
+	a=np.array([0]*r_len)
+	for i in l:
+		a[i[0]:i[1]+1]=1
+	return list(a).count(1)
 
 
 def getAlig(file_genome,file_TE):
@@ -27,16 +30,17 @@ def getAlig(file_genome,file_TE):
 	f=f1.merge(f2,on=["ReadName","ReadLen"],how="inner")
 	f=f.loc[(f["Readref_e"]<f["Readte_s"]+100) | (f["Readref_s"]>f["Readte_e"]-100)]
 	f=f.sort_values(["ReadName","Readte_s","Readte_e"])
+	f["m"]=0
 	r=f.drop_duplicates(["ReadName"],keep="first")
-	r_g=r.groupby(["TEName"],as_index=False).count().sort_values(["ReadName"],ascending=[False])
-	print(f[0:50])
-	#print(r_g[0:10])
-	#print(r_g.shape)
-	#print(f[0:20])
-	#print(f.shape)
-	#print(r.shape)
-	#print(len(set(f["ReadName"])))
-	
+	for read in list(r["ReadName"]):
+		sub=f.loc[f["ReadName"]==read]
+		m=map_ratio(sub)
+		f.loc["ReadName","m"]=m
+	f["p"]=f["m"]/f["RadLen"]
+	print(f[0:10])
+	print(f.shape)
+
+
 file_genome=sys.argv[1]
 file_TE=sys.argv[2]
 
