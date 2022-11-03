@@ -11,8 +11,8 @@ def map_ratio(sub_f):
 	l=list(l1)+list(l2)
 	a=np.array([0]*r_len)
 	for i in l:
-		a[i[0]:i[1]+1]=1
-	return list(a).count(1)
+		a[int(i[0]):int(i[1])+1]=1
+	return list(a).count(1)/r_len*100
 
 
 def getAlig(file_genome,file_TE):
@@ -34,10 +34,16 @@ def getAlig(file_genome,file_TE):
 	r=f.drop_duplicates(["ReadName"],keep="first")
 	for read in list(r["ReadName"]):
 		sub=f.loc[f["ReadName"]==read]
+		sub=sub.drop_duplicates(["Readref_s","Readref_e"],keep="first")
+		sub=sub.drop_duplicates(["Readte_s","Readte_e"],keep="first")
 		m=map_ratio(sub)
-		f.loc["ReadName","m"]=m
-	f["p"]=f["m"]/f["RadLen"]
-	print(f[0:10])
+		f.loc[f["ReadName"]==read,"m"]=m
+		
+	f=f.loc[f["m"]>=90]
+	f=f.groupby(["ReadName"]).filter(lambda x: len(x)>=2)
+
+
+	print(f[0:50])
 	print(f.shape)
 
 
