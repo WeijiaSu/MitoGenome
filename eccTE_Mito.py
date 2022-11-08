@@ -28,25 +28,26 @@ def getAlig(file_genome,file_TE):
 	f2.columns=["ReadName","ReadLen","Readte_s","Readte_e","TEStrand","TEName","TELen","TE_s","TE_e","TE_match","TE_alig","TE_score"]
 
 	f=f1.merge(f2,on=["ReadName","ReadLen"],how="inner")
-	f=f.loc[(f["Readref_e"]<f["Readte_s"]+100) | (f["Readref_s"]>f["Readte_e"]-100)]
-	f=f.sort_values(["ReadName","Readte_s","Readte_e"])
+	fs=f.loc[(f["Readref_e"]<f["Readte_s"]+100) | (f["Readref_s"]>f["Readte_e"]-100)]
+	fs=fs.sort_values(["ReadName","Readte_s","Readte_e"])
 	f["m"]=0
+	f=f.loc[f["ReadName"].isin(list(fs["ReadName"]))]
 	r=f.drop_duplicates(["ReadName"],keep="first")
+	
 	for read in list(r["ReadName"]):
 		sub=f.loc[f["ReadName"]==read]
-		sub=sub.drop_duplicates(["Readref_s","Readref_e"],keep="first")
-		sub=sub.drop_duplicates(["Readte_s","Readte_e"],keep="first")
 		m=map_ratio(sub)
 		f.loc[f["ReadName"]==read,"m"]=m
 		
 	f=f.loc[f["m"]>=90]
-	f=f.groupby(["ReadName"]).filter(lambda x: len(x)>=2)
-
-
+	#f=f.groupby(["ReadName"]).filter(lambda x: len(x)>=2)
 	print(f[0:50])
 	print(f.shape)
-
-
+	for i in set(f["ReadName"]):
+		s=f.loc[f["ReadName"]==i]
+		print("###########################")
+		print(s)
+		print("###########################")
 file_genome=sys.argv[1]
 file_TE=sys.argv[2]
 
