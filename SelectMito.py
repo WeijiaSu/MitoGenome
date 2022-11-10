@@ -21,9 +21,8 @@ def SeletMito(Mito_paf):
 	print(fmerge.shape)
 	
 	f=f.loc[f[0].isin(fmerge[0])]
-	print(f[0:10])
 	print(f.shape)
 	f.to_csv(Mito_paf+".selected.tsv",header=None,index=None,sep=" ")
-
+	rm ="rm %s %s"%(Mito_paf+"bed". Mito_paf+".bed.merge")
 Mito_paf=sys.argv[1]
 SeletMito(Mito_paf)

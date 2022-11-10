@@ -41,13 +41,16 @@ def getAlig(file_genome,file_TE):
 		
 	f=f.loc[f["m"]>=90]
 	#f=f.groupby(["ReadName"]).filter(lambda x: len(x)>=2)
-	print(f[0:50])
-	print(f.shape)
+	fs2=f.loc[(f["TE_s"]<=100) & (f["TE_e"]>=f["TELen"]-100) ]
+	f=f.loc[f["ReadName"].isin(list(fs2["ReadName"]))]
 	for i in set(f["ReadName"]):
 		s=f.loc[f["ReadName"]==i]
 		print("###########################")
 		print(s)
 		print("###########################")
+	
+	print(f.drop_duplicates(["ReadName"],keep="first").shape)
+
 file_genome=sys.argv[1]
 file_TE=sys.argv[2]
 
