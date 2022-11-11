@@ -17,12 +17,12 @@ def SeletMito(Mito_paf):
 	#print(f.shape)
 	fmerge=pd.read_table(Mito_paf+".bed.merge",header=None)
 	fmerge=fmerge.groupby([0]).filter(lambda x: len(x)>=2)
-	print(fmerge[0:10])
-	print(fmerge.shape)
 	
 	f=f.loc[f[0].isin(fmerge[0])]
-	print(f.shape)
 	f.to_csv(Mito_paf+".selected.tsv",header=None,index=None,sep=" ")
-	rm ="rm %s %s"%(Mito_paf+"bed". Mito_paf+".bed.merge")
+	rm ="rm %s %s"%(Mito_paf+".bed", Mito_paf+".bed.merge")
+	os.system(rm)
+
 Mito_paf=sys.argv[1]
+
 SeletMito(Mito_paf)
