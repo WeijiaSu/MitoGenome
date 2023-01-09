@@ -7,25 +7,24 @@ pd.set_option("display.max_column",40)
 
 
 
-
-def GetReads(dire,Accession):
-	reads=dire+Accession+".fastq"
+Name=sys.argv[3]
+def GetReads(reads):
 	records=list(SeqIO.parse(reads,"fastq"))
-	NanoStat="NanoStat --fastq %s -n %s"%(reads,Accession+".NanoStat")
+	NanoStat="NanoStat --fastq %s -n %s"%(reads,Name+".NanoStat")
 	os.system(NanoStat)
 	return len(records)
 
 
-def GetMap(Accession):
-	f=pd.read_table(Accession+".fastq_chrM.fa.paf",header=None,sep=" ")
+def GetMap(paf):
+	f=pd.read_table(paf,header=None,sep=" ")
 	f=f.drop_duplicates([0],keep="first")
 	return f.shape[0]
 
 
-dire=sys.argv[1]
-Accession=sys.argv[2]
+reads=sys.argv[1]
+paf=sys.argv[2]
 
-nReads=GetReads(dire,Accession)
-Mapped=GetMap(Accession)
+nReads=GetReads(reads)
+Mapped=GetMap(paf)
 ratio=round(Mapped/nReads*100,2)
-print(Accession+" "+str(nReads)+" " + str(Mapped)+" "+ str(ratio))
+print(Name+" "+str(nReads)+" " + str(Mapped)+" "+ str(ratio))
